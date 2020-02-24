@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "108623822647",
+    "firebase_url": "https://unglazada-b81bb.firebaseio.com",
+    "project_id": "unglazada-b81bb",
+    "storage_bucket": "unglazada-b81bb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:108623822647:android:1781190b795dc44ff824b2",
+        "android_client_info": {
+          "package_name": "com.flutterthailand.unglazada"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "108623822647-5bnb1kma539mmjfpkls6pvud2da7dorp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBlmjpGGITg-lSKaPJP0SDOxfh8X4k4R3c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "108623822647-5bnb1kma539mmjfpkls6pvud2da7dorp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
