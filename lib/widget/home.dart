@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unglazada/utility/my_constant.dart';
 import 'package:unglazada/utility/normal_dialog.dart';
+import 'package:unglazada/widget/list_product.dart';
 import 'package:unglazada/widget/sign_in.dart';
 import 'package:unglazada/widget/sign_up.dart';
 
@@ -13,6 +14,7 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Field
   List<String> banners = MyConstant().banners;
+  List<String> categorys = MyConstant().categorys;
   String nameUserLogin;
 
   // Method
@@ -33,9 +35,21 @@ class _HomeState extends State<Home> {
     }
   }
 
+  void routeToListProduct(String category) {
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: (BuildContext buildContext) {
+      return ListProduct(
+        category: category,
+      );
+    });
+    Navigator.of(context).push(route);
+  }
+
   Widget elecGroup() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        routeToListProduct(categorys[0]);
+      },
       child: Container(
         width: 100.0,
         child: Column(
@@ -57,7 +71,9 @@ class _HomeState extends State<Home> {
 
   Widget carGroup() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        routeToListProduct(categorys[1]);
+      },
       child: Container(
         width: 100.0,
         child: Column(
@@ -79,7 +95,9 @@ class _HomeState extends State<Home> {
 
   Widget computerGroup() {
     return GestureDetector(
-      onTap: () {},
+      onTap: () {
+        routeToListProduct(categorys[2]);
+      },
       child: Container(
         width: 100.0,
         child: Column(
