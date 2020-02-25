@@ -1,6 +1,9 @@
 import 'package:barcode_scan/barcode_scan.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:unglazada/models/product_model.dart';
+import 'package:unglazada/utility/my_constant.dart';
+import 'package:unglazada/utility/normal_dialog.dart';
 import 'package:unglazada/widget/detail_product.dart';
 
 class ListProduct extends StatefulWidget {
@@ -20,10 +23,11 @@ class _ListProductState extends State<ListProduct> {
   List<String> pictures = List();
   List<String> codes = List();
 
+  List<ProductModel> productModels = List();
+
   // Method
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     currentCategory = widget.category;
     readFirestore();
@@ -56,6 +60,9 @@ class _ListProductState extends State<ListProduct> {
           details.add(detail);
           pictures.add(picture);
           codes.add(code);
+
+          ProductModel model = ProductModel.formSnapshot(snapshot.data);
+          productModels.add(model);
         });
       }
     });
@@ -91,8 +98,19 @@ class _ListProductState extends State<ListProduct> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
-          Text(names[index]),
-          Text(details[index]),
+          Row(
+            children: <Widget>[
+              Text(
+                names[index],
+                style: MyConstant().titleH2,
+              ),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Text(details[index]),
+            ],
+          ),
         ],
       ),
     );
@@ -104,15 +122,7 @@ class _ListProductState extends State<ListProduct> {
       itemBuilder: (BuildContext context, int index) {
         return GestureDetector(
           onTap: () {
-            MaterialPageRoute route =
-                MaterialPageRoute(builder: (BuildContext buildContext) {
-              return DetailProduct(
-                name: names[index],
-                detail: details[index],
-                pathUrl: pictures[index],
-              );
-            });
-            Navigator.of(context).push(route);
+            routeToDetail(index, context);
           },
           child: Row(
             children: <Widget>[
@@ -123,6 +133,18 @@ class _ListProductState extends State<ListProduct> {
         );
       },
     );
+  }
+
+  void routeToDetail(int index, BuildContext context) {
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: (BuildContext buildContext) {
+      return DetailProduct(
+        name: productModels[index].name,
+        detail: productModels[index].detail,
+        pathUrl: productModels[index].pathUrl,
+      );
+    });
+    Navigator.of(context).push(route);
   }
 
   Widget readCodeButton() {
@@ -138,7 +160,29 @@ class _ListProductState extends State<ListProduct> {
     try {
       String string = await BarcodeScanner.scan();
       print('string = $string');
+
+      bool status = true;
+      int index = 0;
+
+      for (var myModel in productModels) {
+        if (string.toString() == myModel.code) {
+          status = false;
+          print('work');
+          routeToDetail(index, context);
+        }
+        index++;
+      }
+
+      showStatus(status, string.toString());
+
     } catch (e) {}
+  }
+
+  void showStatus(bool status, String code){
+    if (status) {
+      normalDialog(context, 'No Code', 'No Code = $code in myDatabase ');
+    } else {
+    }
   }
 
   @override
