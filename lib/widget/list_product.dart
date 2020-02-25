@@ -5,6 +5,7 @@ import 'package:unglazada/widget/detail_product.dart';
 
 class ListProduct extends StatefulWidget {
   final String category;
+
   ListProduct({Key key, this.category}) : super(key: key);
 
   @override
@@ -84,11 +85,16 @@ class _ListProductState extends State<ListProduct> {
   }
 
   Widget showText(int index) {
-    return Column(
-      children: <Widget>[
-        Text(names[index]),
-        Text(details[index]),
-      ],
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.5,
+      height: MediaQuery.of(context).size.width * 0.4,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          Text(names[index]),
+          Text(details[index]),
+        ],
+      ),
     );
   }
 
@@ -128,20 +134,18 @@ class _ListProductState extends State<ListProduct> {
     );
   }
 
-  Future<void> readCodeThread()async{
+  Future<void> readCodeThread() async {
     try {
-
       String string = await BarcodeScanner.scan();
       print('string = $string');
-      
-    } catch (e) {
-    }
+    } catch (e) {}
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(actions: <Widget>[readCodeButton()],
+      appBar: AppBar(
+        actions: <Widget>[readCodeButton()],
         title: Text('List $currentCategory'),
       ),
       body: names.length == 0 ? showProcess() : showListView(),
