@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unglazada/utility/my_constant.dart';
+import 'package:unglazada/utility/normal_dialog.dart';
 
 class SignUp extends StatefulWidget {
   @override
@@ -12,9 +14,10 @@ class _SignUpState extends State<SignUp> {
 
   // Method
   Widget nameForm() {
-    return TextField(onChanged: (value){
-      name = value.trim();
-    },
+    return TextField(
+      onChanged: (value) {
+        name = value.trim();
+      },
       decoration: InputDecoration(
         helperText: 'Type Your Name',
         labelText: 'Name :',
@@ -27,9 +30,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget emailForm() {
-    return TextField(onChanged: (value){
-      email = value.trim();
-    },
+    return TextField(keyboardType: TextInputType.emailAddress,
+      onChanged: (value) {
+        email = value.trim();
+      },
       decoration: InputDecoration(
         helperText: 'Type Your Email',
         labelText: 'Email :',
@@ -42,9 +46,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget passwordForm() {
-    return TextField(onChanged: (value){
-      password = value.trim();
-    },
+    return TextField(
+      onChanged: (value) {
+        password = value.trim();
+      },
       decoration: InputDecoration(
         helperText: 'Type Your Password',
         labelText: 'Password :',
@@ -57,9 +62,10 @@ class _SignUpState extends State<SignUp> {
   }
 
   Widget addressForm() {
-    return TextField(onChanged: (value){
-      address = value.trim();
-    },
+    return TextField(
+      onChanged: (value) {
+        address = value.trim();
+      },
       decoration: InputDecoration(
         helperText: 'Type Your Address',
         labelText: 'Address :',
@@ -73,10 +79,39 @@ class _SignUpState extends State<SignUp> {
 
   Widget signUpButton() {
     return OutlineButton.icon(
-      onPressed: () {},
+      onPressed: () {
+        print('You Click SignUp');
+
+        if (name == null ||
+            name.isEmpty ||
+            email == null ||
+            email.isEmpty ||
+            password == null ||
+            password.isEmpty ||
+            address == null ||
+            address.isEmpty) {
+          print('Have Space');
+          normalDialog(context, 'Have Space', 'Please Fill Every Blank');
+        } else {
+          registerThread();
+        }
+      },
       icon: Icon(Icons.cloud_upload),
       label: Text('Sign Up'),
     );
+  }
+
+  Future<void> registerThread() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    await firebaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password)
+        .then((response) {
+      print('Register Success');
+    }).catchError((response) {
+      String title = response.code;
+      String message = response.message;
+      normalDialog(context, title, message);
+    });
   }
 
   @override
