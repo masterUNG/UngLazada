@@ -1,5 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:unglazada/utility/my_constant.dart';
+import 'package:unglazada/utility/normal_dialog.dart';
 import 'package:unglazada/widget/sign_in.dart';
 import 'package:unglazada/widget/sign_up.dart';
 
@@ -11,8 +13,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   // Field
   List<String> banners = MyConstant().banners;
+  String nameUserLogin;
 
   // Method
+
+  @override
+  void initState() {
+    super.initState();
+    checkLoginStatus();
+  }
+
+  Future<void> checkLoginStatus() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    FirebaseUser firebaseUser = await firebaseAuth.currentUser();
+    if (firebaseUser != null) {
+      setState(() {
+        nameUserLogin = firebaseUser.displayName;
+      });
+    }
+  }
+
   Widget elecGroup() {
     return GestureDetector(
       onTap: () {},
@@ -109,36 +129,45 @@ class _HomeState extends State<Home> {
   }
 
   Widget signInButton() {
-    return IconButton(
-      tooltip: 'Sing In',
-      icon: Icon(
-        Icons.fingerprint,
-        color: Colors.yellow,
-      ),
-      onPressed: () {
-        Navigator.of(context).pop();
-        routeTo(SingIn());
-      },
-    );
+    return nameUserLogin == null
+        ? IconButton(
+            tooltip: 'Sing In',
+            icon: Icon(
+              Icons.fingerprint,
+              color: Colors.yellow,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              routeTo(SingIn());
+            },
+          )
+        : MyConstant().mySizebox;
   }
 
-  void routeTo(Widget object){
-    MaterialPageRoute route = MaterialPageRoute(builder: (BuildContext buildContext){return object;});
-    Navigator.of(context).push(route);
+  void routeTo(Widget object) {
+    MaterialPageRoute route =
+        MaterialPageRoute(builder: (BuildContext buildContext) {
+      return object;
+    });
+    Navigator.of(context).push(route).then((object) {
+      checkLoginStatus();
+    });
   }
 
   Widget signUpButton() {
-    return IconButton(
-      tooltip: 'Sign Up',
-      icon: Icon(
-        Icons.supervised_user_circle,
-        color: Colors.blue,
-      ),
-      onPressed: () {
-        Navigator.of(context).pop();
-        routeTo(SignUp());
-      },
-    );
+    return nameUserLogin == null
+        ? IconButton(
+            tooltip: 'Sign Up',
+            icon: Icon(
+              Icons.supervised_user_circle,
+              color: Colors.blue,
+            ),
+            onPressed: () {
+              Navigator.of(context).pop();
+              routeTo(SignUp());
+            },
+          )
+        : MyConstant().mySizebox;
   }
 
   Widget showHead() {
@@ -147,14 +176,24 @@ class _HomeState extends State<Home> {
         image: DecorationImage(
             image: AssetImage('images/wall.jpg'), fit: BoxFit.cover),
       ),
-      accountName: Text(
-        'Guest',
-        style: MyConstant().titleH2,
-      ),
-      accountEmail: Text(
-        'Non Login',
-        style: MyConstant().titleH3,
-      ),
+      accountName: nameUserLogin == null
+          ? Text(
+              'Guest',
+              style: MyConstant().titleH2,
+            )
+          : Text(
+              nameUserLogin,
+              style: MyConstant().titleH2,
+            ),
+      accountEmail: nameUserLogin == null
+          ? Text(
+              'Non Login',
+              style: MyConstant().titleH3,
+            )
+          : Text(
+              'Login',
+              style: MyConstant().titleH3,
+            ),
       currentAccountPicture: Container(
         width: 50.0,
         height: 50.0,
@@ -195,9 +234,23 @@ class _HomeState extends State<Home> {
       title: Text('Sign Out'),
       subtitle: Text('Sign Out and Exit App'),
       onTap: () {
-        Navigator.of(context).pop();
+        if (nameUserLogin == null) {
+          normalDialog(context, 'Cannot SignOut', 'Because You do not SignIn');
+        } else {
+          signOutProcess();
+        }
+        // Navigator.of(context).pop();
       },
     );
+  }
+
+  Future<void> signOutProcess() async {
+    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
+    await firebaseAuth.signOut().then((response) {
+      setState(() {
+        nameUserLogin = null;
+      });
+    });
   }
 
   Widget showDrawer() {
@@ -213,8 +266,8 @@ class _HomeState extends State<Home> {
     );
   }
 
-  Widget listButton(){
-    return IconButton(icon: Icon(Icons.list), onPressed: (){});
+  Widget listButton() {
+    return IconButton(icon: Icon(Icons.list), onPressed: () {});
   }
 
   @override
