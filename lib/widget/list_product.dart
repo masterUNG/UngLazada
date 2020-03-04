@@ -94,7 +94,7 @@ class _ListProductState extends State<ListProduct> {
   Widget showText(int index) {
     return Container(
       width: MediaQuery.of(context).size.width * 0.5,
-      height: MediaQuery.of(context).size.width * 0.4,
+      // height: MediaQuery.of(context).size.width * 0.4,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: <Widget>[
@@ -108,7 +108,9 @@ class _ListProductState extends State<ListProduct> {
           ),
           Row(
             children: <Widget>[
-              Text(details[index]),
+              Container(width: MediaQuery.of(context).size.width * 0.5,
+                child: Text(details[index]),
+              ),
             ],
           ),
         ],
@@ -174,15 +176,13 @@ class _ListProductState extends State<ListProduct> {
       }
 
       showStatus(status, string.toString());
-
     } catch (e) {}
   }
 
-  void showStatus(bool status, String code){
+  void showStatus(bool status, String code) {
     if (status) {
       normalDialog(context, 'No Code', 'No Code = $code in myDatabase ');
-    } else {
-    }
+    } else {}
   }
 
   @override
