@@ -108,7 +108,14 @@ class _SignUpState extends State<SignUp> {
     await firebaseAuth
         .createUserWithEmailAndPassword(email: email, password: password)
         .then((response) {
-      print('Register Success');
+      FirebaseUser firebaseUser = response.user;
+      uidUser = firebaseUser.uid;
+      print('uidUser = $uidUser');
+
+      UserUpdateInfo info = UserUpdateInfo();
+      info.displayName = name;
+      firebaseUser.updateProfile(info);
+
       insertUserToFireStore();
     }).catchError((response) {
       String title = response.code;
@@ -118,15 +125,6 @@ class _SignUpState extends State<SignUp> {
   }
 
   Future<void> insertUserToFireStore() async {
-    FirebaseAuth firebaseAuth = FirebaseAuth.instance;
-    FirebaseUser firebaseUser = await firebaseAuth.currentUser();
-    uidUser = firebaseUser.uid;
-    print('uidUser = $uidUser');
-
-    UserUpdateInfo userUpdateInfo = UserUpdateInfo();
-    userUpdateInfo.displayName = name;
-    firebaseUser.updateProfile(userUpdateInfo);
-
     Map<String, dynamic> map = Map();
     map['Name'] = name;
     map['Address'] = address;
@@ -138,8 +136,8 @@ class _SignUpState extends State<SignUp> {
         .document(uidUser)
         .setData(map)
         .then((response) {
-          Navigator.of(context).pop();
-        });
+      Navigator.of(context).pop();
+    });
   }
 
   @override
